@@ -5,18 +5,20 @@ Because you can't escape the CP grind
 
 ![Written by: humans](https://img.shields.io/badge/written_by-humans-limegreen)
 """
-# /// pyproject
-# [run]
+# /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#   aiohttp = "^3.8.4"
-#   beautifulsoup4 = "^4.12.2"
-#   requests = "^2.31.0"
-#   attrs = "*"  # Attrs follows CalVer
-#   unmarkd = "^1.1.1"
+#   "aiohttp>=3.8.4",
+#   "beautifulsoup4>=4.12.2",
+#   "requests>=2.31.0",
+#   "certifi>=2026.10.19",
+#   "attrs",
 # ]
 # ///
 import asyncio
+import ssl
+
+import certifi
 import aiohttp
 from bs4 import BeautifulSoup as Soup
 import requests
@@ -163,7 +165,8 @@ LIMIT = slice(3, 10)
 
 async def run():
     global session
-    session = aiohttp.ClientSession()
+    context = ssl.create_default_context(cafile=certifi.where())
+    session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=context))
     try:
         print("getting links")
         # XXX: limit or else USACO servers die
